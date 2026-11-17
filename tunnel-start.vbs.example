@@ -1,0 +1,17 @@
+' Example autostart launcher (copy to Windows Startup folder and fill in placeholders).
+' Starts: 1) SSH reverse tunnel (ECS 172.17.0.1:8090 -> local 8090)  2) dsh-workpc MCP server.
+' Requires: OpenSSH client, private key at KEY_PATH whose pubkey is in ECS authorized_keys.
+
+Set WshShell = CreateObject("WScript.Shell")
+
+' --- 1. SSH reverse tunnel ---
+Const ECS_HOST = "<YOUR_ECS_HOST>"        ' e.g. 1.2.3.4
+Const KEY_PATH = "D:\keys\id_dsh_tunnel"  ' path to the private key (NEVER commit the key itself)
+
+WshShell.Run """C:\Windows\System32\OpenSSH\ssh.exe"" -i " & KEY_PATH & _
+    " -o BatchMode=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3" & _
+    " -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=accept-new -N" & _
+    " -R 172.17.0.1:8090:127.0.0.1:8090 root@" & ECS_HOST, 0, False
+
+' --- 2. MCP server ---
+WshShell.Run """C:\Program Files\nodejs\node.exe"" <REPO_PATH>\dsh-mcp-server\server.mjs", 0, False

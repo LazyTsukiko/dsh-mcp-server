@@ -1,0 +1,11 @@
+# Secrets — never commit
+id_dsh_tunnel
+id_dsh_tunnel.pub
+*.key
+*_key
+credentials*.json
+astrbot-ingress.json
+
+# Instance-specific runtime files
+tunnel-start.vbs
+*.log
